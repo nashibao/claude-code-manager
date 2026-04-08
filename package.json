@@ -19,6 +19,13 @@
       "title": "Launch Claude Code",
       "description": "Open a new Claude Code session in iTerm2",
       "mode": "no-view"
+    },
+    {
+      "name": "session-status",
+      "title": "Claude Session Status",
+      "description": "Show running Claude Code sessions in the menu bar",
+      "mode": "menu-bar",
+      "interval": "10s"
     }
   ],
   "preferences": [

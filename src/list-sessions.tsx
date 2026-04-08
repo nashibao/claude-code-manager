@@ -1,6 +1,6 @@
 import { Action, ActionPanel, Color, Icon, List } from "@raycast/api";
 import { usePromise } from "@raycast/utils";
-import { getActiveSessions, getPastSessions, getTtyForPid } from "./lib/claude-sessions";
+import { getActiveSessions, getSessionStatus, getPastSessions, getTtyForPid } from "./lib/claude-sessions";
 import { focusTabByTty, createTabWithCommand } from "./lib/iterm";
 import { basename } from "path";
 
@@ -17,13 +17,14 @@ function timeAgo(date: Date | number): string {
 export default function ListSessions() {
   const { data: activeSessions, isLoading: loadingActive } = usePromise(async () => {
     const sessions = getActiveSessions();
-    const withTty = await Promise.all(
-      sessions.map(async (s) => ({
-        ...s,
-        tty: (await getTtyForPid(s.pid)) ?? undefined,
-      }))
+    const withStatus = await Promise.all(
+      sessions.map(async (s) => {
+        const tty = (await getTtyForPid(s.pid)) ?? undefined;
+        const status = getSessionStatus(s.cwd, s.sessionId);
+        return { ...s, tty, status };
+      })
     );
-    return withTty;
+    return withStatus;
   });
 
   const { data: pastSessions, isLoading: loadingPast } = usePromise(async () => {
@@ -35,36 +36,41 @@ export default function ListSessions() {
   return (
     <List isLoading={loadingActive || loadingPast} searchBarPlaceholder="Search Claude sessions...">
       <List.Section title="Active Sessions">
-        {activeSessions?.map((session) => (
-          <List.Item
-            key={session.sessionId}
-            icon={{ source: Icon.Terminal, tintColor: Color.Green }}
-            title={session.firstMessage ?? "(no preview)"}
-            subtitle={basename(session.cwd)}
-            accessories={[
-              { text: timeAgo(session.startedAt) },
-              { tag: { value: "active", color: Color.Green } },
-            ]}
-            actions={
-              <ActionPanel>
-                {session.tty && (
+        {activeSessions?.map((session) => {
+          const isRunning = session.status === "running";
+          return (
+            <List.Item
+              key={session.sessionId}
+              icon={{ source: Icon.Terminal, tintColor: isRunning ? Color.Green : Color.SecondaryText }}
+              title={session.firstMessage ?? "(no preview)"}
+              subtitle={basename(session.cwd)}
+              accessories={[
+                { text: timeAgo(session.startedAt) },
+                isRunning
+                  ? { tag: { value: "running", color: Color.Green } }
+                  : { tag: { value: "complete", color: Color.SecondaryText } },
+              ]}
+              actions={
+                <ActionPanel>
+                  {session.tty && (
+                    <Action
+                      title="Switch to Tab"
+                      icon={Icon.ArrowRight}
+                      onAction={() => focusTabByTty(session.tty!)}
+                    />
+                  )}
                   <Action
-                    title="Switch to Tab"
-                    icon={Icon.ArrowRight}
-                    onAction={() => focusTabByTty(session.tty!)}
+                    title="Resume in New Tab"
+                    icon={Icon.Plus}
+                    onAction={() =>
+                      createTabWithCommand(`cd ${session.cwd} && claude --resume ${session.sessionId}`)
+                    }
                   />
-                )}
-                <Action
-                  title="Resume in New Tab"
-                  icon={Icon.Plus}
-                  onAction={() =>
-                    createTabWithCommand(`cd ${session.cwd} && claude --resume ${session.sessionId}`)
-                  }
-                />
-              </ActionPanel>
-            }
-          />
-        ))}
+                </ActionPanel>
+              }
+            />
+          );
+        })}
       </List.Section>
       <List.Section title="Past Sessions">
         {pastSessions

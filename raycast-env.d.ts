@@ -20,6 +20,8 @@ declare namespace Preferences {
   export type ListSessions = ExtensionPreferences & {}
   /** Preferences accessible in the `launch-session` command */
   export type LaunchSession = ExtensionPreferences & {}
+  /** Preferences accessible in the `session-status` command */
+  export type SessionStatus = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -27,5 +29,7 @@ declare namespace Arguments {
   export type ListSessions = {}
   /** Arguments passed to the `launch-session` command */
   export type LaunchSession = {}
+  /** Arguments passed to the `session-status` command */
+  export type SessionStatus = {}
 }
 

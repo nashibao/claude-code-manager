@@ -10,6 +10,7 @@ const execFileAsync = promisify(execFile);
 const CLAUDE_DIR = join(homedir(), ".claude");
 const SESSIONS_DIR = join(CLAUDE_DIR, "sessions");
 const PROJECTS_DIR = join(CLAUDE_DIR, "projects");
+const STATES_DIR = join(CLAUDE_DIR, "session-states");
 
 function isProcessAlive(pid: number): boolean {
   try {
@@ -56,6 +57,17 @@ export async function getTtyForPid(pid: number): Promise<string | null> {
     // process may have exited
   }
   return null;
+}
+
+export function getSessionStatus(cwd: string, sessionId: string): "running" | "complete" {
+  try {
+    const statePath = join(STATES_DIR, sessionId);
+    const content = readFileSync(statePath, "utf-8").trim();
+    return content === "running" ? "running" : "complete";
+  } catch {
+    // No state file = not started yet = complete
+    return "complete";
+  }
 }
 
 export function getActiveSessions(): ActiveSession[] {
