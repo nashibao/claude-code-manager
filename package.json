@@ -1,0 +1,50 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "claude-code-manager",
+  "title": "Claude Code Manager",
+  "description": "Manage Claude Code sessions in iTerm2",
+  "icon": "command-icon.png",
+  "author": "naoki",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "list-sessions",
+      "title": "List Claude Sessions",
+      "subtitle": "Active & Past Sessions",
+      "description": "List and manage Claude Code sessions",
+      "mode": "view"
+    },
+    {
+      "name": "launch-session",
+      "title": "Launch Claude Code",
+      "description": "Open a new Claude Code session in iTerm2",
+      "mode": "no-view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "defaultDirectory",
+      "title": "Default Directory",
+      "description": "Default working directory for new Claude Code sessions",
+      "type": "textfield",
+      "default": "~",
+      "required": false
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.104.0",
+    "@raycast/utils": "^1.17.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/node": "~22.0.0",
+    "@types/react": "^19.0.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.5.0"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray dev",
+    "lint": "ray lint"
+  }
+}
