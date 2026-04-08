@@ -5,7 +5,7 @@ import { focusTabByTty } from "./lib/iterm";
 import { basename } from "path";
 
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-const POLL_INTERVAL = 5000;
+const POLL_INTERVAL = 2000;
 const SPINNER_INTERVAL = 200;
 
 interface SessionState {
