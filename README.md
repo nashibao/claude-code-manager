@@ -15,7 +15,7 @@ Raycast extension for managing [Claude Code](https://claude.ai/code) sessions in
 ## Setup
 
 ```bash
-npm install && npm run dev
+pnpm install && pnpm run dev
 ```
 
 Session status requires Claude Code hooks (`hooks/` directory) — see the files for details, or just ask Claude Code to set it up for you.
